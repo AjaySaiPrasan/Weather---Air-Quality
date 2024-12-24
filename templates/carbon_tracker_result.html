@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carbon Emissions History</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #f4f7f6 0%, #e8f5e9 100%);
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+            min-height: 100vh;
+            color: #2d3748;
+        }
+
+        h1 {
+            color: #1a5e2d;
+            font-size: 36px;
+            margin-top: 20px;
+            text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        h1:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(90deg, #4CAF50, #81C784);
+            border-radius: 2px;
+        }
+
+        h3, h4 {
+            color: #2E7D32;
+            margin: 15px 0;
+        }
+
+        .container {
+            width: 85%;
+            margin: 30px auto;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .button-link {
+            margin: 20px;
+            padding: 14px 28px;
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            display: inline-block;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.2);
+            border: none;
+        }
+
+        .button-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.3);
+            background: linear-gradient(135deg, #45a049, #388E3C);
+        }
+
+        #chart-container {
+            width: 100%;
+            margin-top: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px 0;
+        }
+
+        #carbonChart {
+            width: 90%;
+            height: 450px;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+            background: white;
+            padding: 20px;
+        }
+
+        .category-list {
+            text-align: left;
+            margin-top: 30px;
+            font-size: 18px;
+            background: #f8faf8;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .category-list h3 {
+            margin-bottom: 20px;
+            color: #1B5E20;
+        }
+
+        .category-list ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .category-list li {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e7e0;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+        }
+
+        .category-list li:hover {
+            background: #f0f7f0;
+            transform: translateX(5px);
+        }
+
+        .category-list li:last-child {
+            border-bottom: none;
+        }
+
+        .footer {
+            margin-top: 40px;
+            color: #4a5568;
+            font-size: 15px;
+            padding: 20px;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .footer p {
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                width: 95%;
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 28px;
+            }
+
+            .button-link {
+                padding: 12px 24px;
+                font-size: 15px;
+                margin: 15px;
+            }
+
+            #carbonChart {
+                width: 100%;
+                height: 350px;
+                padding: 10px;
+            }
+
+            .category-list {
+                padding: 15px;
+                font-size: 16px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .button-link, .category-list li {
+                transition: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Carbon Emissions History</h1>
+
+        <h3>Your Total Carbon Emissions: {{ total_carbon_emissions }} kg CO2</h3>
+        <h4>Last Updated: {{ last_updated }}</h4>
+
+        <div class="category-list">
+            <h3>Category-wise Breakdown:</h3>
+            <ul>
+                {% for item in carbon_footprint %}
+                    <li>{{ item.category }}: {{ item.value }} kg CO2</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div id="chart-container">
+            <div id="carbonChart"></div>
+        </div>
+
+        <div>
+            <a href="/leaderboard" class="button-link">Go to Leaderboard</a>
+        </div>
+
+        <div class="footer">
+            <p>Keep track of your progress and make better choices for a greener tomorrow!</p>
+        </div>
+    </div>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script>
+        const carbonData = JSON.parse('{{ carbon_data | tojson | safe }}' || '[]');
+
+        console.log("Carbon Data:", carbonData);
+
+        const Dates = carbonData.map(item => item.date);
+        const values = carbonData.map(item => item.value);
+
+        const trace = {
+            x: Dates,
+            y: values,
+            type: 'line',
+            name: 'Total Carbon Footprint',
+            marker: { color: 'rgba(255, 99, 132, 1)' }
+        };
+
+        const layout = {
+            title: 'maximum Carbon Emissions by Date',
+            xaxis: { title: 'date' },
+            yaxis: { title: 'Carbon Footprint (kg CO2)', rangemode: 'tozero' },
+            plot_bgcolor: "#f9f9f9",
+            paper_bgcolor: "#fff",
+            font: { family: "Arial, sans-serif", size: 14 },
+            margin: { t: 40, b: 40, l: 60, r: 40 }
+        };
+
+        const data = [trace];
+
+        Plotly.newPlot('carbonChart', data, layout);
+    </script>
+
+</body>
+</html>

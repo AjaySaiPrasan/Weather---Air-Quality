@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carbon Tracker Form</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #4CAF50, #81C784);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            color: #333333;
+        }
+
+        /* Header Navigation */
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .button-link {
+            text-decoration: none;
+            color: white;
+            background: linear-gradient(135deg, #0288D1, #29B6F6);
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .button-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            background: linear-gradient(135deg, #0277BD, #0288D1);
+        }
+
+        /* Form Styles */
+        form {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            margin: 0 auto;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        h3, h4 {
+            color: #1B5E20;
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 24px;
+            font-weight: bold;
+            text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 8px;
+            color: #2E7D32;
+        }
+
+        input[type="number"], 
+        input[type="text"], 
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #E8F5E9;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: #4CAF50;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+        }
+
+        button {
+            background: linear-gradient(135deg, #2E7D32, #43A047);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        button:hover {
+            background: linear-gradient(135deg, #1B5E20, #2E7D32);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Transportation Fields */
+        #transportation_fields {
+            margin-bottom: 20px;
+        }
+
+        .transportation_entry {
+            background: #F1F8E9;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #C8E6C9;
+        }
+
+        /* Results Section */
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+
+        ul li {
+            padding: 15px;
+            background: #F1F8E9;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+            border: 1px solid #C8E6C9;
+        }
+
+        ul li:hover {
+            transform: translateX(5px);
+            background: #E8F5E9;
+        }
+
+        p {
+            text-align: center;
+            color: #1B5E20;
+            font-size: 14px;
+            margin-top: 20px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            form {
+                padding: 20px;
+            }
+
+            .button-container {
+                flex-direction: column;
+            }
+
+            .button-link {
+                width: 100%;
+                text-align: center;
+            }
+
+            h3 {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="button-container">
+        <a href="{{ url_for('home') }}" class="button-link">Home</a>
+        <a href="/leaderboard" class="button-link">Leaderboard</a>
+        <a href="/community" class="button-link">Community</a>
+    </div>
+    <form method="POST" action="{{ url_for('carbon_tracker') }}">
+        {{ form.hidden_tag() }}
+        <label for="city">City</label>
+        {{ form.city(size=20) }} <br>
+        
+        <label for="transport_distance">Transport Distance (km)</label>
+        {{ form.transport_distance(size=20) }} <br>
+        
+        <label for="mode_of_transport">Mode of Transport</label>
+        {{ form.mode_of_transport(size=20) }} <br>
+        
+        <label for="previous_month_usage">Previous Month Electricity Usage (kWh)</label>
+        {{ form.previous_month_usage(size=20) }} <br>
+        
+        <label for="todays_usage">Today's Electricity Usage (kWh)</label>
+        {{ form.todays_usage(size=20) }} <br>
+        
+        <label for="dry_waste">Dry Waste (kg)</label>
+        {{ form.dry_waste(size=20) }} <br>
+        
+        <label for="wet_waste">Wet Waste (kg)</label>
+        {{ form.wet_waste(size=20) }} <br>
+        
+        <button type="submit">Submit</button>
+    </form>
+
+    <h3>Aggregated Carbon Footprint</h3>
+    <ul>
+        {% for entry in carbon_footprint %}
+            <li>{{ entry.category }}: {{ entry.value }} kg CO2</li>
+        {% endfor %}
+    </ul>
+
+    <p>Last updated: {{ last_updated }}</p>
+
+    <script>
+        function addMoreTransportation() {
+            var div = document.createElement("div");
+            div.classList.add("transportation_entry");
+            div.innerHTML = `
+                <label for="transport_distance">Distance (km):</label>
+                <input type="number" name="transport_distance" required><br><br>
+                <label for="mode_of_transport">Mode of Transport:</label>
+                <input type="text" name="mode_of_transport" required><br><br>
+            `;
+            document.getElementById("transportation_fields").appendChild(div);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register Page</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .register-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .register-container:hover {
+            transform: translateY(-5px);
+        }
+
+        .register-container h2 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 30px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e1e1;
+            border-radius: 12px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .input-group input:focus {
+            border-color: #84fab0;
+            box-shadow: 0 0 0 4px rgba(132, 250, 176, 0.1);
+        }
+
+        button {
+            background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%);
+            color: #fff;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(132, 250, 176, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .login-link {
+            margin-top: 25px;
+            text-align: center;
+            font-size: 15px;
+            color: #666;
+        }
+
+        .login-link a {
+            color: #84fab0;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .login-link a:hover {
+            color: #8fd3f4;
+        }
+
+        .error {
+            color: #ff6b6b;
+            font-size: 13px;
+            margin-top: 6px;
+            font-weight: 500;
+        }
+
+        @media (max-width: 480px) {
+            .register-container {
+                padding: 30px 20px;
+            }
+
+            .register-container h2 {
+                font-size: 24px;
+            }
+
+            .input-group {
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <h2>Register</h2>
+        <form id="registerForm" action="/register" method="post" onsubmit="return validateForm()">
+            <div class="input-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" placeholder="Enter your username">
+                <p id="usernameError" class="error"></p>
+            </div>
+            <div class="input-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" placeholder="Enter your email">
+                <p id="emailError" class="error"></p>
+            </div>
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password">
+                <p id="passwordError" class="error"></p>
+            </div>
+            <div class="input-group">
+                <label for="confirm-password">Confirm Password</label>
+                <input type="password" id="confirm-password" name="confirm_password" placeholder="Confirm your password">
+                <p id="confirmPasswordError" class="error"></p>
+            </div>
+            <button type="submit">Register</button>
+            <p class="login-link">Already have an account? <a href="/login">Login</a></p>
+        </form>
+    </div>
+
+    <script>
+        function validateForm() {
+            document.getElementById('usernameError').innerText = '';
+            document.getElementById('emailError').innerText = '';
+            document.getElementById('passwordError').innerText = '';
+            document.getElementById('confirmPasswordError').innerText = '';
+
+            var username = document.getElementById('username').value;
+            var email = document.getElementById('email').value;
+            var password = document.getElementById('password').value;
+            var confirmPassword = document.getElementById('confirm-password').value;
+            var valid = true;
+
+            if (username.trim() === '') {
+                document.getElementById('usernameError').innerText = 'Please enter your username';
+                valid = false;
+            }
+
+            if (email.trim() === '') {
+                document.getElementById('emailError').innerText = 'Please enter your email';
+                valid = false;
+            }
+
+            if (password.trim() === '') {
+                document.getElementById('passwordError').innerText = 'Please enter your password';
+                valid = false;
+            }
+
+            if (confirmPassword.trim() === '') {
+                document.getElementById('confirmPasswordError').innerText = 'Please confirm your password';
+                valid = false;
+            } else if (confirmPassword !== password) {
+                document.getElementById('confirmPasswordError').innerText = 'Passwords do not match';
+                valid = false;
+            }
+
+            return valid;
+        }
+    </script>
+</body>
+</html>
