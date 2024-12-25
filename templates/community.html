@@ -262,7 +262,7 @@
                 {% for post in posts %}
                 <li class="community-item">
                     <h4>{{ post.title }}</h4>
-                    <div class="posted-by">Posted by: <strong>{{ post.username }}</strong> at {{ post.created_at }}</div>
+                    <div class="posted-by">Posted by: <strong>{{ post.username }}</div>
                     <div class="likes-comments">
                         <form class="like-form" data-post-id="{{ post.id }}">
                             <button type="submit" class="like-button">Like</button>

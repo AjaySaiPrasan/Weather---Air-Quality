@@ -415,10 +415,7 @@ def fetch_leaderboard():
 
 @app.route('/community', methods=['GET', 'POST'])
 def community():
-    """
-    Community page: allows users to view and add posts.
-    Anonymous users can also post and comment.
-    """
+    """Community page: allows users to view and add posts."""
     if request.method == 'POST':
         title = request.form.get('title')
         username = session.get('username', 'Anonymous')  # Default to 'Anonymous' if user is not logged in
@@ -428,8 +425,8 @@ def community():
 
         # Insert a new post into the database
         cursor.execute(
-            "INSERT INTO community_posts (title, username, likes) VALUES (?, ?, ?)",
-            (title, username, 0)
+            "INSERT INTO community_posts (title, username) VALUES (?, ?)",
+            (title, username)
         )
         connection.commit()
         return redirect('/community')
@@ -444,12 +441,16 @@ def community():
         cursor.execute("SELECT * FROM comments WHERE post_id=?", (post_id,))
         comments = cursor.fetchall()
 
+        # Get total likes by counting entries in the post_likes table
+        cursor.execute("SELECT COUNT(*) FROM post_likes WHERE post_id=?", (post_id,))
+        like_count = cursor.fetchone()[0]
+
         post_list.append({
             'id': post[0],
             'title': post[1],
             'username': post[2],
-            'created_at': post[3],
-            'likes': post[4],
+          
+            'likes': like_count,
             'comments': [{'user_id': comment[2], 'content': comment[3]} for comment in comments]
         })
 
