@@ -463,46 +463,62 @@ def community():
 @app.route('/like_post/<int:post_id>', methods=['POST'])
 def like_post(post_id):
     """Increments the like count of a post."""
-    user_id = session.get('userId')  # Get the user ID from the session
+    user_id = session.get('userId')
     
-    if not user_id:  # If no user ID exists in the session, handle the error
-        return jsonify({'error': 'You must be logged in to like a post. Please log in and try again.'}), 403
+    if not user_id:
+        return jsonify({'error': 'You must be logged in to like a post'}), 403
 
     try:
         # Check if the user has already liked the post
         cursor.execute("SELECT * FROM post_likes WHERE post_id=? AND user_id=?", (post_id, user_id))
         existing_like = cursor.fetchone()
 
-        if existing_like:  # User already liked the post
-            return jsonify({'error': 'You have already liked this post.'}), 400
+        if existing_like:
+            return jsonify({'error': 'You have already liked this post'}), 400
 
         # Insert the like into the post_likes table
         cursor.execute("INSERT INTO post_likes (post_id, user_id) VALUES (?, ?)", (post_id, user_id))
         cursor.execute("UPDATE community_posts SET likes = likes + 1 WHERE id=?", (post_id,))
         connection.commit()
 
-        return jsonify({'success': True, 'message': 'Post liked successfully.'})
+        # Fetch the updated like count
+        cursor.execute("SELECT likes FROM community_posts WHERE id=?", (post_id,))
+        updated_likes = cursor.fetchone()[0]
+
+        return jsonify({'success': True, 'likes': updated_likes})
     except Exception as e:
-        # Log the error and return an error response
         print(f"Error liking post: {e}")
-        return jsonify({'error': 'An error occurred while liking the post. Please try again later.'}), 500
+        return jsonify({'error': 'An error occurred while liking the post'}), 500
 
 @app.route('/add_comment/<int:post_id>', methods=['POST'])
 def add_comment(post_id):
     """Adds a comment to a specific post."""
     user_id = session.get('userId', 'Anonymous')
-    content = request.form.get('content')
+    
+    try:
+        data = request.get_json()
+        content = data.get('content')
 
-    if not content:
-        return jsonify({'error': 'Comment cannot be empty.'}), 400
+        if not content:
+            return jsonify({'error': 'Comment cannot be empty'}), 400
 
-    # Insert comment into the database
-    cursor.execute(
-        "INSERT INTO comments (post_id, user_id, content) VALUES (?, ?, ?)",
-        (post_id, user_id, content)
-    )
-    connection.commit()
-    return jsonify({'success': True})
+        # Insert comment into the database
+        cursor.execute(
+            "INSERT INTO comments (post_id, user_id, content) VALUES (?, ?, ?)",
+            (post_id, user_id, content)
+        )
+        connection.commit()
+
+        # Return the new comment data
+        return jsonify({
+            'success': True,
+            'user_id': user_id,
+            'content': content
+        })
+    except Exception as e:
+        print(f"Error adding comment: {e}")
+        return jsonify({'error': 'An error occurred while adding the comment'}), 500
+
 
 def get_user_id(username):
     """ Helper function to get user ID by username """
